@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a1633">
 <title>中秋快乐 · 但愿人长久</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23f6d47c'/><circle cx='38' cy='42' r='7' fill='%23e0b45a' opacity='.55'/><circle cx='60' cy='60' r='5' fill='%23e0b45a' opacity='.55'/></svg>">
 <style>
   :root{
     --gold:#f6d47c;
-    --gold-deep:#e8b04b;
+    --gold-deep:#c9a35c;
     --ink:#3d2b1f;
     --paper:#fff8ea;
   }
@@ -15,10 +17,15 @@
   html,body{height:100%}
   body{
     font-family:"Noto Serif SC","Songti SC","STSong","KaiTi","楷体",serif;
-    background:linear-gradient(180deg,#050b1f 0%,#0a1633 40%,#12234f 75%,#1a2f5e 100%);
+    background:linear-gradient(180deg,#04091a 0%,#0a1633 38%,#12234f 72%,#1c3163 100%);
     overflow:hidden;
     -webkit-user-select:none;user-select:none;
     -webkit-tap-highlight-color:transparent;
+  }
+  /* 暗角，聚焦画面中心 */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:5;
+    background:radial-gradient(ellipse at 50% 42%,transparent 55%,rgba(2,6,18,.55) 100%);
   }
 
   /* ---------- 夜空 ---------- */
@@ -29,8 +36,18 @@
     animation:twinkle var(--d,3s) ease-in-out var(--delay,0s) infinite;
   }
   @keyframes twinkle{
-    0%,100%{opacity:.15;transform:scale(.7)}
+    0%,100%{opacity:.12;transform:scale(.7)}
     50%{opacity:.95;transform:scale(1.15)}
+  }
+
+  /* 十字闪光星 */
+  .sparkle{position:absolute;pointer-events:none;animation:sparklePulse var(--d,3.4s) ease-in-out var(--delay,0s) infinite}
+  .sparkle::before,.sparkle::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:2px}
+  .sparkle::before{width:1.6px;height:100%;background:linear-gradient(180deg,transparent,#fff 35%,#fff 65%,transparent)}
+  .sparkle::after{height:1.6px;width:100%;background:linear-gradient(90deg,transparent,#fff 35%,#fff 65%,transparent)}
+  @keyframes sparklePulse{
+    0%,100%{opacity:.15;transform:scale(.5) rotate(0deg)}
+    50%{opacity:.95;transform:scale(1.05) rotate(40deg)}
   }
 
   .moon{
@@ -43,15 +60,26 @@
       inset -8px -10px 28px rgba(214,150,40,.35);
     animation:moonrise 2.2s ease-out both, moonglow 6s ease-in-out 2.2s infinite;
   }
-  .moon i{position:absolute;border-radius:50%;background:rgba(216,164,66,.28);filter:blur(1px)}
+  .moon i{position:absolute;border-radius:50%;background:rgba(216,164,66,.26);box-shadow:inset 1px 2px 3px rgba(150,100,20,.35);filter:blur(.5px)}
   .moon i:nth-child(1){width:22%;height:22%;left:26%;top:52%}
   .moon i:nth-child(2){width:14%;height:14%;left:58%;top:30%}
   .moon i:nth-child(3){width:10%;height:10%;left:48%;top:66%}
   .moon i:nth-child(4){width:8%;height:8%;left:70%;top:58%}
+  /* 月晕环 */
+  .moon::after{
+    content:"";position:absolute;inset:-22%;border-radius:50%;
+    border:1px solid rgba(255,230,160,.22);
+    box-shadow:0 0 30px rgba(255,220,130,.15) inset;
+    animation:haloPulse 6s ease-in-out 2.2s infinite;
+  }
   @keyframes moonrise{from{opacity:0;transform:translateY(9vh) scale(.9)}to{opacity:1;transform:none}}
   @keyframes moonglow{
     0%,100%{box-shadow:0 0 40px 12px rgba(255,224,140,.55),0 0 120px 50px rgba(255,210,110,.22),inset -8px -10px 28px rgba(214,150,40,.35)}
     50%{box-shadow:0 0 60px 20px rgba(255,228,150,.7),0 0 160px 70px rgba(255,215,120,.3),inset -8px -10px 28px rgba(214,150,40,.35)}
+  }
+  @keyframes haloPulse{
+    0%,100%{transform:scale(1);opacity:.7}
+    50%{transform:scale(1.06);opacity:1}
   }
 
   .cloud{
@@ -74,9 +102,10 @@
     opacity:0;
   }
   .meteor::before{
-    content:"";position:absolute;top:50%;right:0;width:90px;height:1px;
-    background:linear-gradient(270deg,rgba(255,255,255,.9),transparent);
+    content:"";position:absolute;top:50%;right:0;width:110px;height:1.5px;
+    background:linear-gradient(270deg,rgba(255,255,255,.95),rgba(255,255,255,0));
     transform:translateY(-50%) rotate(35deg);transform-origin:right center;
+    border-radius:2px;
   }
   @keyframes shoot{
     0%{opacity:0;transform:translate(0,0)}
@@ -85,52 +114,69 @@
     100%{opacity:0}
   }
 
-  /* ---------- 山丘与玉兔 ---------- */
+  /* ---------- 山丘、雾气、桂树与玉兔 ---------- */
   .hill{
     position:fixed;left:-12vw;bottom:-16vh;width:70vw;height:34vh;
     border-radius:50%;background:#0b1830;
     box-shadow:inset 0 14px 30px rgba(70,100,160,.25);
   }
   .hill.h2{left:auto;right:-20vw;bottom:-20vh;width:90vw;height:38vh;background:#081226}
+  .hill.h3{left:-6vw;bottom:-24vh;width:120vw;height:42vh;background:#0d1e3e;z-index:-1}
+  .mist{
+    position:fixed;left:0;right:0;bottom:24vh;height:12vh;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(140,170,220,.07) 55%,transparent);
+    filter:blur(10px);
+  }
 
-  .rabbit{position:fixed;left:14vw;bottom:calc(14vh - 2px);width:clamp(64px,11vmin,110px);opacity:.92;animation:moonrise 2.4s ease-out .4s both}
-  .grass{position:fixed;left:8vw;bottom:13vh;width:26vw;height:3vh;opacity:.5}
+  .tree{
+    position:fixed;left:4vw;bottom:11vh;width:clamp(90px,14vmin,150px);
+    opacity:.95;animation:moonrise 2.4s ease-out .3s both;
+  }
+  .rabbit{
+    position:fixed;left:15vw;bottom:calc(12vh - 2px);width:clamp(58px,10vmin,96px);
+    opacity:.95;animation:moonrise 2.4s ease-out .5s both;
+  }
+  .grass{position:fixed;left:7vw;bottom:11.2vh;width:28vw;height:3vh;opacity:.55}
   .grass span{position:absolute;bottom:0;width:2px;background:#16294d;border-radius:2px}
 
   /* ---------- 灯笼 ---------- */
   .lantern{
-    position:absolute;top:0;pointer-events:none;
+    position:absolute;top:0;pointer-events:none;z-index:2;
     animation:floatup var(--t,22s) linear var(--delay,0s) forwards;
   }
   .lantern .body{
     position:relative;width:var(--s,44px);height:calc(var(--s,44px)*1.24);
     border-radius:46% 46% 50% 50%;
     background:linear-gradient(160deg,#ff9a52 0%,#f4522e 45%,#c81f1f 100%);
-    box-shadow:0 0 24px 8px rgba(255,110,50,.45),inset 0 -6px 12px rgba(120,10,10,.55),inset 0 6px 10px rgba(255,200,120,.5);
-    animation:sway var(--w,3.4s) ease-in-out var(--delay,0s) infinite alternate;
+    box-shadow:
+      0 0 24px 8px rgba(255,110,50,.45),
+      inset 0 -6px 12px rgba(120,10,10,.55),
+      inset 0 6px 10px rgba(255,200,120,.5),
+      inset 0 0 0 1.5px rgba(255,220,140,.25);
+    animation:sway var(--w,3.4s) ease-in-out var(--delay,0s) infinite alternate,
+              flick 2.6s ease-in-out var(--delay,0s) infinite;
   }
-  .lantern .body::before{ /* 骨架线 */
+  .lantern .body::before{
     content:"";position:absolute;inset:0;border-radius:inherit;
     background:repeating-linear-gradient(90deg,transparent 0 calc(20% - 1px),rgba(120,20,10,.35) calc(20% - 1px) 20%);
   }
-  .lantern .body::after{ /* 福字 */
+  .lantern .body::after{
     content:"福";position:absolute;inset:0;display:grid;place-items:center;
     color:#ffe9a8;font-size:calc(var(--s,44px)*.42);font-weight:700;
     text-shadow:0 0 6px rgba(255,220,120,.8);
   }
-  .lantern .cap,.lantern .base{margin:0 auto;width:calc(var(--s,44px)*.55);height:calc(var(--s,44px)*.13);background:#8c1414;border-radius:3px}
+  .lantern .cap,.lantern .base{margin:0 auto;width:calc(var(--s,44px)*.55);height:calc(var(--s,44px)*.13);background:linear-gradient(180deg,#a51e1e,#7c0f0f);border-radius:3px}
   .lantern .cap{box-shadow:0 -2px 6px rgba(0,0,0,.3)}
-  .lantern .tassel{
-    margin:2px auto 0;width:2px;height:calc(var(--s,44px)*.5);
-    background:linear-gradient(#ffd45e,#e0442a);border-radius:2px;
+  .lantern .tassel{margin:2px auto 0;width:2px;height:calc(var(--s,44px)*.42);background:linear-gradient(#ffd45e,#e0442a);border-radius:2px;position:relative}
+  .lantern .tassel::after{
+    content:"";position:absolute;left:50%;bottom:-3px;transform:translateX(-50%) rotate(45deg);
+    width:5px;height:5px;background:linear-gradient(135deg,#ffe08a,#d99a2b);border-radius:1px;
   }
-  @keyframes floatup{
-    from{transform:translateY(110vh)}
-    to{transform:translateY(-30vh)}
-  }
+  @keyframes floatup{from{transform:translateY(110vh)}to{transform:translateY(-30vh)}}
   @keyframes sway{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+  @keyframes flick{0%,100%{filter:brightness(1)}50%{filter:brightness(1.16)}}
 
-  /* ---------- 桂花花瓣 ---------- */
+  /* ---------- 桂花花瓣与小花朵 ---------- */
   .petal{
     position:absolute;top:-4vh;width:10px;height:14px;
     background:radial-gradient(circle at 40% 30%,#fff3c8,#ffd873 70%,#f0b64e);
@@ -138,6 +184,8 @@
     opacity:0;pointer-events:none;
     animation:fall var(--t,9s) linear var(--delay,0s) infinite;
   }
+  .blossom{position:absolute;top:-5vh;pointer-events:none;opacity:0;animation:fall var(--t,9s) linear var(--delay,0s) infinite}
+  .blossom svg{display:block;filter:drop-shadow(0 0 3px rgba(255,220,120,.5))}
   @keyframes fall{
     0%{opacity:0;transform:translate(0,-4vh) rotate(0)}
     10%{opacity:.9}
@@ -148,16 +196,16 @@
   .card{
     position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);
     width:min(86vw,460px);padding:clamp(26px,6vmin,44px) clamp(20px,5vmin,38px);
-    text-align:center;color:var(--ink);
+    text-align:center;color:var(--ink);z-index:6;
     background:
-      repeating-linear-gradient(0deg,rgba(214,178,110,.05) 0 2px,transparent 2px 5px),
-      linear-gradient(160deg,#fffdf6 0%,var(--paper) 55%,#f9ecd2 100%);
+      repeating-linear-gradient(0deg,rgba(214,178,110,.045) 0 2px,transparent 2px 5px),
+      linear-gradient(160deg,#fffdf6 0%,var(--paper) 55%,#f7e9cd 100%);
     border:1px solid rgba(190,150,80,.55);
     border-radius:10px;
     box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 6px rgba(246,212,124,.12),0 0 0 7px rgba(190,150,80,.35);
     animation:cardin 1.6s cubic-bezier(.2,.8,.25,1) .5s both;
   }
-  .card::before{ /* 内框 */
+  .card::before{
     content:"";position:absolute;inset:9px;border:1px solid rgba(190,150,80,.5);border-radius:6px;pointer-events:none;
   }
   @keyframes cardin{
@@ -165,35 +213,57 @@
     to{opacity:1;transform:translate(-50%,-50%)}
   }
 
+  /* 金色角花 */
+  .corner{position:absolute;width:24px;height:24px;pointer-events:none;z-index:7}
+  .corner::before{content:"";position:absolute;inset:0;border-top:2px solid var(--gold-deep);border-left:2px solid var(--gold-deep);border-radius:2px 0 0 0}
+  .corner::after{content:"";position:absolute;width:5px;height:5px;background:linear-gradient(135deg,#f6d47c,#c9882c);transform:rotate(45deg);left:-2.5px;top:-2.5px;box-shadow:0 0 5px rgba(246,212,124,.7)}
+  .corner.tl{left:5px;top:5px}
+  .corner.tr{right:5px;top:5px;transform:rotate(90deg)}
+  .corner.br{right:5px;bottom:5px;transform:rotate(180deg)}
+  .corner.bl{left:5px;bottom:5px;transform:rotate(270deg)}
+
   .card .eyebrow{
     font-size:clamp(12px,1.8vmin,14px);letter-spacing:.55em;text-indent:.55em;
     color:#a5763a;margin-bottom:10px;
   }
+  .card .eyebrow b{color:#d9b25f;font-weight:400;margin:0 .2em}
   .card h1{
     font-size:clamp(44px,9.5vmin,72px);font-weight:900;letter-spacing:.08em;line-height:1.15;
     background:linear-gradient(120deg,#b97b1e 0%,#f6d47c 25%,#9a5d10 50%,#f6d47c 75%,#b97b1e 100%);
     background-size:220% 100%;
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 14px rgba(246,200,100,.28));
     animation:shimmer 4.5s linear infinite;
   }
   @keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
 
   .card .verse{
-    margin:12px 0 18px;font-size:clamp(14px,2.4vmin,17px);color:#7a5a33;letter-spacing:.18em;
+    margin:10px 0 0;font-size:clamp(13px,2.2vmin,16px);color:#7a5a33;letter-spacing:.2em;
   }
+  .divider{display:flex;align-items:center;gap:10px;margin:12px clamp(8px,3vmin,24px) 14px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px}
+  .divider::before{background:linear-gradient(90deg,transparent,var(--gold-deep))}
+  .divider::after{background:linear-gradient(270deg,transparent,var(--gold-deep))}
+  .divider i{
+    width:7px;height:7px;transform:rotate(45deg);
+    background:linear-gradient(135deg,#f6d47c,#c9882c);
+    box-shadow:0 0 6px rgba(246,212,124,.6);
+  }
+
   .card .greet{
-    font-size:clamp(15px,2.6vmin,18px);line-height:2;color:#4a3524;
+    font-size:clamp(15px,2.6vmin,18px);line-height:2.1;color:#4a3524;
   }
   .card .greet b{color:#b3401f;font-weight:700}
   .card .from{
-    margin-top:16px;text-align:right;font-size:clamp(13px,2.2vmin,15px);color:#8a6a3f;
+    margin-top:16px;padding-right:52px;text-align:right;font-size:clamp(13px,2.2vmin,15px);color:#8a6a3f;
   }
 
   .seal{
     position:absolute;right:14px;bottom:14px;width:44px;height:44px;border-radius:8px;
-    background:#c0392b;color:#fff4e0;display:grid;place-items:center;
+    background:radial-gradient(circle at 35% 30%,#d9534a,#c0392b 60%,#992d22);
+    color:#fff4e0;display:grid;place-items:center;
     font-size:15px;line-height:1.15;letter-spacing:2px;text-indent:2px;
-    box-shadow:0 2px 8px rgba(150,30,20,.4);
+    box-shadow:0 2px 8px rgba(150,30,20,.45),inset 0 0 0 2px rgba(255,240,220,.3);
     transform:rotate(8deg);writing-mode:vertical-rl;
   }
 
@@ -203,12 +273,19 @@
     text-align:center;z-index:9;
   }
   #blessBtn{
+    position:relative;overflow:hidden;
     font-family:inherit;font-size:clamp(15px,2.6vmin,17px);letter-spacing:.35em;text-indent:.35em;
     color:#3d1e0e;padding:13px 34px;border:none;border-radius:999px;cursor:pointer;
     background:linear-gradient(160deg,#ffe7a6,#f2c14e 55%,#d99a2b);
     box-shadow:0 6px 22px rgba(242,193,78,.4),inset 0 1px 0 rgba(255,255,255,.7);
     transition:transform .2s,box-shadow .2s;
   }
+  #blessBtn::after{
+    content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+    transform:skewX(-20deg);animation:shine 3.2s ease-in-out infinite;
+  }
+  @keyframes shine{0%,55%{left:-60%}100%{left:130%}}
   #blessBtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(242,193,78,.55),inset 0 1px 0 rgba(255,255,255,.7)}
   #blessBtn:active{transform:translateY(0) scale(.97)}
   #blessBtn.done{letter-spacing:.2em;text-indent:.2em}
@@ -228,17 +305,36 @@
   <div class="moon"><i></i><i></i><i></i><i></i></div>
 </div>
 
+<div class="hill h3"></div>
+<div class="mist"></div>
 <div class="hill h2"></div>
 <div class="hill"></div>
 
+<!-- 桂树剪影 -->
+<svg class="tree" viewBox="0 0 160 200" fill="none">
+  <path d="M78 200 C80 160 70 140 58 118 C50 104 52 92 58 82" stroke="#060d1d" stroke-width="10" stroke-linecap="round"/>
+  <path d="M62 96 C48 88 40 76 38 62" stroke="#060d1d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M60 108 C74 102 84 92 88 80" stroke="#060d1d" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#071023">
+    <circle cx="56" cy="52" r="20"/><circle cx="80" cy="42" r="16"/><circle cx="36" cy="66" r="13"/>
+    <circle cx="96" cy="58" r="12"/><circle cx="66" cy="30" r="12"/>
+  </g>
+  <g fill="#ffd873" opacity=".85">
+    <circle cx="50" cy="46" r="1.6"/><circle cx="64" cy="58" r="1.4"/><circle cx="78" cy="38" r="1.6"/>
+    <circle cx="88" cy="52" r="1.4"/><circle cx="42" cy="60" r="1.3"/><circle cx="70" cy="26" r="1.4"/>
+    <circle cx="94" cy="62" r="1.3"/><circle cx="58" cy="34" r="1.2"/>
+  </g>
+</svg>
+
+<!-- 玉兔剪影：树下望月 -->
 <svg class="rabbit" viewBox="0 0 120 110" fill="#060d1d">
-  <!-- 玉兔剪影：望月 -->
-  <path d="M38 8 C34 -2 46 -4 47 6 L49 30 C50 34 47 36 45 33 Z"/>
-  <path d="M58 6 C56 -4 68 -6 68 4 L66 29 C65 33 62 34 61 30 Z"/>
-  <ellipse cx="55" cy="66" rx="30" ry="26"/>
-  <circle cx="52" cy="40" r="17"/>
-  <path d="M27 72 C16 74 10 82 12 90 L38 90 C30 84 27 78 27 72 Z"/>
-  <circle cx="46" cy="38" r="1.6" fill="#f6d47c"/>
+  <ellipse cx="55" cy="80" rx="27" ry="22"/>
+  <circle cx="38" cy="86" r="14"/>
+  <circle cx="76" cy="52" r="13"/>
+  <ellipse cx="72" cy="30" rx="5.5" ry="17" transform="rotate(-14 72 30)"/>
+  <ellipse cx="84" cy="33" rx="5.5" ry="15" transform="rotate(10 84 33)"/>
+  <circle cx="33" cy="74" r="6"/>
+  <circle cx="80" cy="49" r="1.8" fill="#f6d47c"/>
 </svg>
 
 <svg class="grass" viewBox="0 0 200 20" fill="none">
@@ -251,9 +347,12 @@
 </svg>
 
 <div class="card">
-  <div class="eyebrow">花好月圆 · 人团圆</div>
+  <span class="corner tl"></span><span class="corner tr"></span>
+  <span class="corner br"></span><span class="corner bl"></span>
+  <div class="eyebrow"><b>✦</b>花好月圆 · 人团圆<b>✦</b></div>
   <h1>中秋快乐</h1>
   <div class="verse">但愿人长久 · 千里共婵娟</div>
+  <div class="divider"><i></i></div>
   <div class="greet">
     亲爱的 <b id="toName">朋友</b>：<br>
     嘿嘿，还挺好玩。<br>
@@ -282,6 +381,17 @@
       'width:'+sz+'px;height:'+sz+'px;'+
       '--d:'+(2+Math.random()*4)+'s;--delay:'+(Math.random()*5)+'s;';
     sky.appendChild(s);
+  }
+
+  /* 十字闪光星 */
+  for(var k=0;k<7;k++){
+    var sp=document.createElement('div');
+    sp.className='sparkle';
+    var ss=10+Math.random()*10;
+    sp.style.cssText='left:'+(Math.random()*100)+'vw;top:'+(Math.random()*50)+'vh;'+
+      'width:'+ss+'px;height:'+ss+'px;'+
+      '--d:'+(2.6+Math.random()*3)+'s;--delay:'+(Math.random()*5)+'s;';
+    sky.appendChild(sp);
   }
 
   /* 流星 */
@@ -321,7 +431,7 @@
   setTimeout(autoLantern,1600);
 
   /* 桂花花瓣 */
-  for(var p=0;p<16;p++){
+  for(var p=0;p<14;p++){
     var pe=document.createElement('div');
     pe.className='petal';
     pe.style.cssText='left:'+(Math.random()*100)+'vw;--t:'+(7+Math.random()*6)+'s;'+
@@ -330,11 +440,23 @@
     sky.appendChild(pe);
   }
 
+  /* 桂花小花朵 */
+  var FLOWER='<svg viewBox="0 0 20 20" width="13" height="13"><g fill="#ffe9a8"><circle cx="10" cy="5" r="3.2"/><circle cx="15" cy="10" r="3.2"/><circle cx="10" cy="15" r="3.2"/><circle cx="5" cy="10" r="3.2"/><circle cx="10" cy="10" r="2.4" fill="#f0b64e"/></g></svg>';
+  for(var f=0;f<10;f++){
+    var bl=document.createElement('div');
+    bl.className='blossom';
+    bl.innerHTML=FLOWER;
+    bl.style.cssText='left:'+(Math.random()*100)+'vw;--t:'+(8+Math.random()*7)+'s;'+
+      '--delay:'+(Math.random()*10)+'s;--dx:'+((Math.random()*16)-8)+'vw;'+
+      'transform:scale('+(0.7+Math.random()*0.7)+')';
+    sky.appendChild(bl);
+  }
+
   /* 点亮祝福 */
   var btn=document.getElementById('blessBtn');
   var lit=false;
   btn.addEventListener('click',function(){
-    for(var k=0;k<5;k++){
+    for(var j=0;j<5;j++){
       spawnLantern(8+Math.random()*80,36+Math.random()*20,16+Math.random()*10,0);
     }
     if(!lit){
