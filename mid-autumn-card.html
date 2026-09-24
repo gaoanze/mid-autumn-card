@@ -429,9 +429,10 @@
   </g>
 </svg>
 
-<button id="musicBtn" aria-label="播放或静音背景音乐">
+<button id="musicBtn" aria-label="播放背景音乐">
   <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 18.5V6.2l10-2v11.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.8" cy="18.5" r="2.4" fill="currentColor"/><circle cx="16.8" cy="15.7" r="2.4" fill="currentColor"/></svg>
 </button>
+<audio id="bgm" src="sh-chorus.mp3" loop preload="metadata"></audio>
 
 <div class="card" id="cardEl">
   <span class="corner tl"></span><span class="corner tr"></span>
@@ -614,49 +615,21 @@
     if(!lit){lit=true;btn.textContent='花 好 月 圆';btn.classList.add('done');}
   });
 
-  /* ---- 背景音乐：WebAudio 生成式五声音阶 ---- */
+  /* ---- 背景音乐：One Night in Shanghai ·「月落乌啼霜满天」副歌片段 ---- */
   var musicBtn=document.getElementById('musicBtn');
-  var actx=null,master=null,timer=null,playing=false;
-  var SCALE=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,784.00,880.00];
-  function initAudio(){
-    var AC=window.AudioContext||window.webkitAudioContext;
-    actx=new AC();
-    master=actx.createGain();master.gain.value=0.5;
-    var dl=actx.createDelay();dl.delayTime.value=0.32;
-    var fb=actx.createGain();fb.gain.value=0.3;
-    var wet=actx.createGain();wet.gain.value=0.2;
-    master.connect(actx.destination);
-    master.connect(dl);dl.connect(fb);fb.connect(dl);
-    dl.connect(wet);wet.connect(actx.destination);
-  }
-  function pluck(freq){
-    var t=actx.currentTime;
-    var o=actx.createOscillator(),g=actx.createGain();
-    o.type='triangle';o.frequency.value=freq;
-    g.gain.setValueAtTime(0.0001,t);
-    g.gain.exponentialRampToValueAtTime(0.15,t+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001,t+1.6);
-    o.connect(g);g.connect(master);o.start(t);o.stop(t+1.7);
-    var o2=actx.createOscillator(),g2=actx.createGain();
-    o2.type='sine';o2.frequency.value=freq*2;
-    g2.gain.setValueAtTime(0.0001,t);
-    g2.gain.exponentialRampToValueAtTime(0.05,t+0.02);
-    g2.gain.exponentialRampToValueAtTime(0.0001,t+1.1);
-    o2.connect(g2);g2.connect(master);o2.start(t);o2.stop(t+1.2);
-  }
-  function melody(){
-    if(!playing)return;
-    pluck(SCALE[Math.floor(Math.random()*SCALE.length)]);
-    timer=setTimeout(melody,420+Math.random()*680);
+  var bgm=document.getElementById('bgm');
+  bgm.volume=.85;
+  function syncMusic(){
+    var on=!bgm.paused && !bgm.ended;
+    musicBtn.classList.toggle('on',on);
+    musicBtn.setAttribute('aria-label',on?'暂停背景音乐':'播放背景音乐');
   }
   musicBtn.addEventListener('click',function(){
-    if(!actx)initAudio();
-    playing=!playing;
-    musicBtn.classList.toggle('on',playing);
-    musicBtn.setAttribute('aria-label',playing?'静音背景音乐':'播放背景音乐');
-    if(playing){actx.resume();melody();}
-    else clearTimeout(timer);
+    if(bgm.paused){var pr=bgm.play();if(pr&&pr.catch)pr.catch(function(){});}
+    else bgm.pause();
   });
+  bgm.addEventListener('play',syncMusic);
+  bgm.addEventListener('pause',syncMusic);
 
   /* ---- 保存贺卡图片（html2canvas，多级 CDN 按需加载） ---- */
   var saveBtn=document.getElementById('saveBtn'),exporting=false;
